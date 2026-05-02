@@ -1,17 +1,61 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
+    <ion-title>Welcome to your task manager!</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
+      <ion-title size="large">Add Task</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <div class="task-form">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Create New Task</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Category</ion-label>
+          <ion-select [(ngModel)]="selectedCategory" placeholder="Select a category"
+                      (ionChange)="clearMessages()">
+            @for (cat of categories; track cat) {
+              <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Task Description</ion-label>
+          <ion-input [(ngModel)]="taskDescription" (ionInput)="clearMessages()" placeholder="e.g., Finish quarterly report" clearInput>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Due Date & Time (optional)</ion-label>
+          <ion-input type="datetime-local" [(ngModel)]="taskDueDate" (ionInput)="clearMessages()">
+          </ion-input>
+        </ion-item>
+
+        @if (errorMessage) {
+        <div class="error-message">{{ errorMessage }}</div>
+        }
+        @if (successMessage) {
+        <div class="success-message">{{ successMessage }}</div>
+        }
+
+        <div class="button-group">
+          <ion-button expand="block" (click)="createTask()">
+            Save Task
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="clearForm()">
+            Clear
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

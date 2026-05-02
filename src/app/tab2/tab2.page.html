@@ -1,17 +1,136 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+    <ion-title>Search & Edit</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
+      <ion-title size="large">Search & Edit</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <div class="search-form">
+    <!-- Search Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Search Tasks</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Filter by Category</ion-label>
+          <ion-select [(ngModel)]="filterCategory" placeholder="All Categories"
+                      (ionChange)="clearMessages()">
+            <ion-select-option value="">All Categories</ion-select-option>
+            @for (cat of categories; track cat) {
+              <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Search by Keyword</ion-label>
+          <ion-input [(ngModel)]="searchKeyword" (ionInput)="clearMessages()" placeholder="e.g., quarterly report" clearInput>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Due Date From</ion-label>
+          <ion-input type="datetime-local" [(ngModel)]="filterDateFrom">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Due Date To</ion-label>
+          <ion-input type="datetime-local" [(ngModel)]="filterDateTo">
+          </ion-input>
+        </ion-item>
+
+        @if (errorMessage) {
+        <div class="error-message">{{ errorMessage }}</div>
+        }
+        @if (successMessage) {
+        <div class="success-message">{{ successMessage }}</div>
+        }
+
+        <div class="button-group">
+          <ion-button expand="block" (click)="searchTasks()">
+            Search
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="clearSearch()">
+            Clear
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Results List -->
+    @if (hasSearched && filteredTasks.length > 0) {
+    <ion-card class="results-card">
+      <ion-card-header>
+        <ion-card-title>Results ({{ filteredTasks.length }})</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-list>
+          @for (task of filteredTasks; track task.id) {
+          <ion-item button (click)="selectTask(task)"
+                    [class.selected-task]="editingTask?.id === task.id">
+            <ion-label>
+              <p class="task-description">{{ task.description }}</p>
+              @if (task.dueDate) {
+              <p class="task-due-date">Due: {{ task.dueDate | date:'medium' }}</p>
+              }
+            </ion-label>
+            <ion-badge slot="end" [color]="getCategoryColor(task.category)">{{ task.category }}</ion-badge>
+          </ion-item>
+          }
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    }
+
+    <!-- Edit Card -->
+    @if (editingTask) {
+    <ion-card class="edit-card">
+      <ion-card-header>
+        <ion-card-title>Edit Task</ion-card-title>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Category</ion-label>
+          <ion-select [(ngModel)]="editCategory" placeholder="Select category">
+            @for (cat of categories; track cat) {
+              <ion-select-option [value]="cat">{{ cat }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Description</ion-label>
+          <ion-input [(ngModel)]="editDescription" clearInput>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Due Date & Time</ion-label>
+          <ion-input type="datetime-local" [(ngModel)]="editDueDate">
+          </ion-input>
+        </ion-item>
+
+        <div class="button-group">
+          <ion-button expand="block" (click)="updateTask()">
+            Update Task
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="cancelEdit()">
+            Cancel
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    }
+  </div>
 </ion-content>

@@ -1,0 +1,83 @@
+flowchart TD
+    App([Angular App]) --> Tabs
+
+    subgraph Tabs["Tab Pages"]
+        direction TB
+
+        subgraph Tab1["Tab1 — Add Task"]
+            T1_create["createTask()
+- validate category + description
+- build Task {id, category, description, createdAt, dueDate}
+- read('tasks') → append → create('tasks', updatedArray)"]
+        end
+
+        subgraph Tab2["Tab2 — Search & Edit"]
+            T2_search["searchTasks()
+- read('tasks') → filter by:
+  • category
+  • keyword (description)
+  • dueDate range (from/to)"]
+            T2_update["updateTask()
+- validate edit fields
+- read('tasks') → find by id
+- modify task (description/category/dueDate)
+- create('tasks', updatedArray)"]
+        end
+
+        subgraph Tab3["Tab3 — Manage"]
+            T3_load["loadTasks()
+- read('tasks') → overdue-first sort (then dueDate asc)"]
+            T3_delete["deleteTask(id)
+- filter local array by id
+- create('tasks', updatedArray)"]
+            T3_clear["clearAll()
+- create('tasks', [])"]
+        end
+    end
+
+    Tabs --> StorageService
+
+    subgraph StorageService["StorageService (providedIn: 'root')"]
+        direction TB
+        Create["create(key, value)
+JSON.stringify → localStorage.setItem"]
+        Read["read<T>(key)
+localStorage.getItem → JSON.parse"]
+        Update["update(key, value)
+JSON.stringify → localStorage.setItem (NOT used by current tabs)"]
+        Delete["delete(key)
+localStorage.removeItem (NOT used by current tabs)"]
+        GetAll["getAll()
+iterate localStorage → parse all entries (NOT used by current tabs)"]
+        Clear["clear()
+localStorage.clear"]
+    end
+
+    StorageService --> LocalStorage[(localStorage)]
+
+    subgraph DataModel["Task Model"]
+        TaskObj["Task {
+  id: string
+  category: string
+  description: string
+  createdAt: string (ISO)
+  dueDate: string | null (ISO) }"]
+        Storage["Stored as: key 'tasks' → Task[]"]
+    end
+
+    %% Tab → Method mappings (current implementation)
+    T1_create -.->|read('tasks')| Read
+    T1_create -.->|create('tasks', array)| Create
+
+    T2_search -.->|read('tasks')| Read
+    T2_update -.->|read('tasks')| Read
+    T2_update -.->|create('tasks', array)| Create
+
+    T3_load -.->|read('tasks')| Read
+    T3_delete -.->|create('tasks', array)| Create
+    T3_clear -.->|create('tasks', [])| Create
+
+    %% Storage error paths (logged inside service)
+    Create -->|localStorage errors| ErrorLog1[console.error]
+    Read -->|parse/lookup errors| ErrorLog2[console.error → null]
+    Clear -->|localStorage errors| ErrorLog6[console.error]

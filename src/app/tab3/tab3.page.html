@@ -1,17 +1,55 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+    <ion-title>Manage</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
+      <ion-title size="large">Manage</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <!-- Actions -->
+  <ion-list>
+    <ion-item-divider>
+      <ion-label>All Tasks ({{ allTasks.length }})</ion-label>
+      <ion-button slot="end" color="danger" fill="clear" (click)="clearAll()" [disabled]="allTasks.length === 0">
+        Clear All
+      </ion-button>
+    </ion-item-divider>
+
+    @if (allTasks.length === 0) {
+    <ion-item>
+      <ion-note>No tasks stored.</ion-note>
+    </ion-item>
+    }
+
+    @for (task of allTasks; track task.id) {
+    <ion-item-sliding>
+      <ion-item [class.overdue-item]="isOverdue(task)">
+        <ion-label>
+          <h3>{{ task.description }}</h3>
+          <p>
+            @if (task.dueDate) {
+              <span [class.overdue-text]="isOverdue(task)">
+                Due: {{ task.dueDate | date:'medium' }}
+              </span>
+            } @else {
+              <span>No due date</span>
+            }
+          </p>
+        </ion-label>
+        <ion-badge slot="end" [color]="getCategoryColor(task.category)">{{ task.category }}</ion-badge>
+        <ion-button slot="end" fill="clear" color="danger" (click)="deleteTask(task.id)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteTask(task.id)">Delete</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    }
+  </ion-list>
 </ion-content>
