@@ -1,5 +1,7 @@
 # myApp — Task Manager
 
+Author: David Augusto Cabrera Chaves. Bogota, Colombia.
+
 A mobile-first task management app built with **Ionic 8 + Angular 20**, packaged for Android and iOS via **Apache Cordova**, with **Firebase Remote Config** for feature flags.
 
 ---
