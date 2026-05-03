@@ -314,23 +314,7 @@ ionic cordova run ios --emulator
 
 ---
 
-## Documentation
 
-Detailed docs in the `MD/` folder:
-
-| File | Description |
-|---|---|
-| [PROJECT_STATUS.md](MD/PROJECT_STATUS.md) | Full build history and phase log |
-| [FRONTEND_IMPLEMENTATION.md](MD/FRONTEND_IMPLEMENTATION.md) | Tab-by-tab implementation reference |
-| [TAB1_IMPLEMENTATION.md](MD/TAB1_IMPLEMENTATION.md) | Add Task tab — architecture and behavior |
-| [TAB2_IMPLEMENTATION.md](MD/TAB2_IMPLEMENTATION.md) | Search & Edit tab — architecture and behavior |
-| [COMPLETED_TASKS_IMPLEMENTATION.md](MD/COMPLETED_TASKS_IMPLEMENTATION.md) | Task completion feature — model, logic, UI |
-| [FIREBASE_REMOTE_CONFIG.md](MD/FIREBASE_REMOTE_CONFIG.md) | Firebase setup and feature flag usage |
-| [SERVICES_ARCHITECTURE.md](MD/SERVICES_ARCHITECTURE.md) | StorageService + FeatureFlagService reference |
-| [BACKEND_ARCHITECTURE.md](MD/BACKEND_ARCHITECTURE.md) | Service patterns, DI, state management |
-| [MOBILE_BUILD_CORDOVA.md](MD/MOBILE_BUILD_CORDOVA.md) | Android and iOS build guide |
-| [PERFORMANCE_OPTIMIZATIONS.md](MD/PERFORMANCE_OPTIMIZATIONS.md) | OnPush, trackBy, lazy loading — implementation plan |
-| [PROBLEMS_AND_SOLUTIONS.md](MD/PROBLEMS_AND_SOLUTIONS.md) | Issue log and troubleshooting reference |
 
 ---
 
