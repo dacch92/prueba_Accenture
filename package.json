@@ -1,8 +1,8 @@
 {
   "name": "myApp",
   "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "author": "David Cabrera <dacch.992@gmail.com>",
+  "homepage": "https:www.dcspace.dev",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
