@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
@@ -7,14 +7,16 @@ import {
   IonItemDivider, IonBadge
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { trashOutline } from 'ionicons/icons';
+import { trashOutline, checkmarkOutline, arrowUndoOutline } from 'ionicons/icons';
 import { StorageService } from '../services/storage.service';
+import { FeatureFlagService } from '../services/feature-flag.service';
 import { Task } from '../models/task.model';
 
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     DatePipe,
     IonHeader, IonToolbar, IonTitle, IonContent,
@@ -25,21 +27,49 @@ import { Task } from '../models/task.model';
 })
 export class Tab3Page implements OnInit {
   allTasks: Task[] = [];
+  statsEnabled = false;
 
-  constructor(private storage: StorageService) {
-    addIcons({ trashOutline });
+  constructor(
+    private storage: StorageService,
+    private featureFlags: FeatureFlagService,
+    private cdr: ChangeDetectorRef
+  ) {
+    addIcons({ trashOutline, checkmarkOutline, arrowUndoOutline });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.featureFlags.init();
+    this.statsEnabled = this.featureFlags.getBoolean('enable_task_stats');
     this.loadTasks();
+    this.cdr.markForCheck();
   }
 
   ionViewWillEnter() {
     this.loadTasks();
   }
 
+  get pendingTasks(): Task[] {
+    return this.allTasks.filter(t => !t.completed);
+  }
+
+  get completedTasks(): Task[] {
+    return this.allTasks.filter(t => t.completed);
+  }
+
+  toggleComplete(id: string) {
+    const tasks = this.storage.read<Task[]>('tasks') || [];
+    const index = tasks.findIndex(t => t.id === id);
+    if (index !== -1) {
+      tasks[index].completed = !tasks[index].completed;
+      this.storage.create('tasks', tasks);
+      this.loadTasks();
+    }
+  }
+
   loadTasks() {
     const tasks = this.storage.read<Task[]>('tasks') || [];
+    // Migrate legacy tasks that lack the completed field
+    tasks.forEach(t => { if (t.completed === undefined) t.completed = false; });
     const now = new Date().getTime();
 
     this.allTasks = tasks.sort((a, b) => {

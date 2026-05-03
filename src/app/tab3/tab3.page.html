@@ -11,22 +11,42 @@
     </ion-toolbar>
   </ion-header>
 
+  <!-- Stats Card (controlled by Remote Config feature flag) -->
+  @if (statsEnabled) {
+  <div class="stats-card">
+    <div class="stat-item">
+      <span class="stat-value">{{ allTasks.length }}</span>
+      <span class="stat-label">Total</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value pending">{{ pendingTasks.length }}</span>
+      <span class="stat-label">Pending</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-value completed">{{ completedTasks.length }}</span>
+      <span class="stat-label">Completed</span>
+    </div>
+  </div>
+  }
+
   <!-- Actions -->
   <ion-list>
     <ion-item-divider>
-      <ion-label>All Tasks ({{ allTasks.length }})</ion-label>
+      <ion-label>Pending ({{ pendingTasks.length }})</ion-label>
       <ion-button slot="end" color="danger" fill="clear" (click)="clearAll()" [disabled]="allTasks.length === 0">
         Clear All
       </ion-button>
     </ion-item-divider>
 
-    @if (allTasks.length === 0) {
+    @if (pendingTasks.length === 0 && completedTasks.length === 0) {
     <ion-item>
       <ion-note>No tasks stored.</ion-note>
     </ion-item>
     }
 
-    @for (task of allTasks; track task.id) {
+    @for (task of pendingTasks; track task.id) {
     <ion-item-sliding>
       <ion-item [class.overdue-item]="isOverdue(task)">
         <ion-label>
@@ -42,14 +62,52 @@
           </p>
         </ion-label>
         <ion-badge slot="end" [color]="getCategoryColor(task.category)">{{ task.category }}</ion-badge>
+        <ion-button slot="end" fill="clear" color="success" (click)="toggleComplete(task.id)">
+          <ion-icon name="checkmark-outline"></ion-icon>
+        </ion-button>
         <ion-button slot="end" fill="clear" color="danger" (click)="deleteTask(task.id)">
           <ion-icon name="trash-outline"></ion-icon>
         </ion-button>
       </ion-item>
       <ion-item-options side="end">
+        <ion-item-option color="success" (click)="toggleComplete(task.id)">Done</ion-item-option>
         <ion-item-option color="danger" (click)="deleteTask(task.id)">Delete</ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
+    }
+
+    @if (completedTasks.length > 0) {
+    <ion-item-divider>
+      <ion-label>Completed ({{ completedTasks.length }})</ion-label>
+    </ion-item-divider>
+
+    @for (task of completedTasks; track task.id) {
+    <ion-item-sliding>
+      <ion-item class="completed-task">
+        <ion-label>
+          <h3>{{ task.description }}</h3>
+          <p>
+            @if (task.dueDate) {
+              <span>Due: {{ task.dueDate | date:'medium' }}</span>
+            } @else {
+              <span>No due date</span>
+            }
+          </p>
+        </ion-label>
+        <ion-badge slot="end" [color]="getCategoryColor(task.category)">{{ task.category }}</ion-badge>
+        <ion-button slot="end" fill="clear" color="medium" (click)="toggleComplete(task.id)">
+          <ion-icon name="arrow-undo-outline"></ion-icon>
+        </ion-button>
+        <ion-button slot="end" fill="clear" color="danger" (click)="deleteTask(task.id)">
+          <ion-icon name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <ion-item-options side="end">
+        <ion-item-option color="medium" (click)="toggleComplete(task.id)">Undo</ion-item-option>
+        <ion-item-option color="danger" (click)="deleteTask(task.id)">Delete</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+    }
     }
   </ion-list>
 </ion-content>

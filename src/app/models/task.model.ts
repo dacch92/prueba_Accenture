@@ -4,6 +4,7 @@ export interface Task {
   description: string;
   createdAt: string;
   dueDate: string | null;
+  completed: boolean;
 }
 
 export const CATEGORIES = [

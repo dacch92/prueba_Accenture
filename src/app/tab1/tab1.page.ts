@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader, IonToolbar, IonTitle, IonContent,
@@ -13,6 +13,7 @@ import { Task, CATEGORIES } from '../models/task.model';
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     FormsModule,
     IonHeader, IonToolbar, IonTitle, IonContent,
@@ -53,7 +54,8 @@ export class Tab1Page {
       category: this.selectedCategory,
       description: this.taskDescription.trim(),
       createdAt: new Date().toISOString(),
-      dueDate: this.taskDueDate ? new Date(this.taskDueDate).toISOString() : null
+      dueDate: this.taskDueDate ? new Date(this.taskDueDate).toISOString() : null,
+      completed: false
     };
 
     // Load existing tasks, append, save
